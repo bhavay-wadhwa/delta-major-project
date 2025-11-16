@@ -6,7 +6,7 @@ if(process.env.NODE_ENV != "production"){
 
 const express=require("express");
 const app=express();
-const port=8081;
+const port=process.env.PORT || 8081;
 const path=require("path");
 const Listing=require("./models/listing.js");
 const ejsMate=require("ejs-mate");
@@ -43,7 +43,7 @@ const store=MongoStore.create({
     touchAfter:24*3600,
 
 });
-store.on("error",()=>{
+store.on("error",(err)=>{
     console.log("ERROR IN MONGO SESSION STORE",err);
 })
 const sessionOptions={
@@ -76,7 +76,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req,res,next)=>{
     res.locals.success=req.flash("success");
     res.locals.error=req.flash("error");
-    res.locals.currUser=req.user;
+    res.locals.currUser=req.user || null;
     next();
 })
 
@@ -143,6 +143,7 @@ app.use((err,req,res,next)=>{
 app.listen(port,()=>{
     console.log(`Listening on port ${port}`);
 });
+
 
 
 
